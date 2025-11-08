@@ -1,12 +1,10 @@
 ﻿<!DOCTYPE html>
-<!-- saved from url=(0060)https://new-webpage-4won21ups-otto-kats-projects.vercel.app/ -->
+ <!-- saved from url=(0060)https://new-webpage-4won21ups-otto-kats-projects.vercel.app/ -->
 <html lang="zh-CN">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>自然窥探者 · LeanCloud 上传系统</title>
-
-    <!-- LeanCloud SDK -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>自然窥探者 · LeanCloud 上传系统</title> <!-- LeanCloud SDK -->
     <script src="./自然窥探者 · LeanCloud 上传系统_files/av-min.js.下载"></script>
     <style type="text/css" class="print-ignore-style">
         @media print {
@@ -14,33 +12,10 @@
                 display: none !important;
             }
         }
-    </style>
-
-    <!-- 粒子背景 -->
-    <script src="./自然窥探者 · LeanCloud 上传系统_files/particles.min.js.下载"></script>
-
-    <!-- MathJax -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [
-                    ["\\(", "\\)"],
-                    ["$", "$"],
-                ],
-                displayMath: [
-                    ["$$", "$$"],
-                    ["\\[", "\\]"],
-                ],
-            },
-            options: {
-                skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
-            },
-        };
-    </script>
-    <script id="MathJax-script"
-            async=""
-            src="./自然窥探者 · LeanCloud 上传系统_files/tex-mml-chtml.js.下载"></script>
-
+    </style> <!-- 粒子背景 -->
+    <script src="./自然窥探者 · LeanCloud 上传系统_files/particles.min.js.下载"></script> <!-- MathJax -->
+    <script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] } };</script>
+    <script id="MathJax-script" async="" src="./自然窥探者 · LeanCloud 上传系统_files/tex-mml-chtml.js.下载"></script>
     <style>
         :root {
             --bg1: #101522;
@@ -80,14 +55,13 @@
             backdrop-filter: blur(10px);
         }
 
-        input,
-        textarea {
+        input, textarea {
             width: 100%;
             margin: 6px 0;
             padding: 8px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
             color: white;
         }
 
@@ -105,7 +79,7 @@
             }
 
         .comment {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255,255,255,0.2);
             margin-top: 10px;
             padding-top: 10px;
         }
@@ -124,172 +98,720 @@
         }
 
         #markdownPreview {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,0.06);
             border-radius: 8px;
             padding: 10px;
             margin-top: 8px;
         }
     </style>
-</head>
-
-<body>
-    <div id="particles-js"></div>
-
-    <div class="card">
-        <h2>自然窥探者 · LeanCloud 上传系统</h2>
-        <p>上传 PDF 或图片评论，全网可见</p>
-
-        <input id="name" placeholder="名字 (必填)" />
-        <input id="email" placeholder="邮箱 (可选)" />
-        <textarea id="text" placeholder="评论内容 (支持 Markdown 与 LaTeX)"></textarea>
-        <input id="fileInput" type="file" accept="application/pdf,image/png,image/jpeg" />
-        <button id="submitBtn">提交评论</button>
-
-        <div id="status" style="margin-top: 6px; font-size: 13px; color: #94a3b8"></div>
-        <div id="markdownPreview">*Markdown 实时预览 / Live Preview*</div>
-
-        <h3 style="margin-top: 20px">已有评论</h3>
-        <div id="comments"></div>
-
-        <div class="about">
-            <b>Otto Von Davinstar</b><br />
-            “If you want to find the secrets of the universe,<br />
-            think in terms of energy, frequency and vibration.”<br />
-            — N. Tesla
-        </div>
-    </div>
-
-    <!-- marked.js for Markdown 解析 -->
-    <script type="module">
-        import { marked } from "https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js";
-
-        // ---------- 初始化 LeanCloud ----------
-        AV.init({
-            appId: "Q2JlmwGNoDKcXuzrp0Th0s7i-gzGzoHsz", // ← 改成你自己的
-            appKey: "b5dHHuUgH1AKyXXxtfNfMBLj", // ← 改成你自己的
-            serverURL: "https://q2jlmwgn.lc-cn-n1-shared.com", // ← 改成你自己的
-        });
-
-        const nameEl = document.getElementById("name");
-        const emailEl = document.getElementById("email");
-        const textEl = document.getElementById("text");
-        const fileEl = document.getElementById("fileInput");
-        const previewEl = document.getElementById("markdownPreview");
-        const statusEl = document.getElementById("status");
-        const commentsEl = document.getElementById("comments");
-        const submitBtn = document.getElementById("submitBtn");
-
-        // ---------- Markdown 实时预览 ----------
-        textEl.addEventListener("input", async () => {
-            previewEl.innerHTML = marked.parse(textEl.value || "*Markdown 实时预览 / Live Preview*");
-            if (window.MathJax && MathJax.typesetPromise) {
-                try {
-                    await MathJax.typesetPromise([previewEl]);
-                } catch { }
-            }
-        });
-
-        // ---------- 提交评论 ----------
-        submitBtn.addEventListener("click", async () => {
-            const name = nameEl.value.trim();
-            const email = emailEl.value.trim();
-            const text = textEl.value.trim();
-            const file = fileEl.files[0];
-
-            if (!name || !text) return alert("请填写名字与评论内容！");
-            statusEl.textContent = "正在上传中...";
-
-            try {
-                const Comment = AV.Object.extend("comments");
-                const comment = new Comment();
-                comment.set("name", name);
-                comment.set("email", email);
-                comment.set("text", text);
-
-                if (file) {
-                    const avFile = new AV.File(file.name, file);
-                    await avFile.save();
-                    comment.set("fileUrl", avFile.url());
-                    comment.set("fileName", file.name);
-                }
-
-                await comment.save();
-                statusEl.textContent = "✅ 评论已提交！";
-                nameEl.value = emailEl.value = textEl.value = "";
-                fileEl.value = "";
-                previewEl.innerHTML = "*Markdown 实时预览 / Live Preview*";
-                loadComments();
-            } catch (err) {
-                console.error(err);
-                statusEl.textContent = "❌ 上传失败，请检查 LeanCloud 设置";
-            }
-        });
-
-        // ---------- 加载评论 ----------
-        async function loadComments() {
-            commentsEl.innerHTML = "<p>加载中...</p>";
-            const query = new AV.Query("comments");
-            query.descending("createdAt");
-            try {
-                const results = await query.find();
-                commentsEl.innerHTML = "";
-                for (const item of results) {
-                    const div = document.createElement("div");
-                    div.className = "comment";
-                    const name = item.get("name") || "匿名";
-                    const text = marked.parse(item.get("text") || "");
-                    const fileUrl = item.get("fileUrl");
-                    const fileName = item.get("fileName");
-                    const date = item.createdAt ? item.createdAt.toLocaleString() : "";
-                    div.innerHTML = `
-                  <div><strong>${name}</strong>
-                    <span style="color:#94a3b8;font-size:12px;">${date}</span>
-                  </div>
-                  <div style="margin-top:6px;">${text}</div>
-                  ${fileUrl
-                            ? `<a class="file-link" href="${fileUrl}" target="_blank">📎 ${fileName}</a>`
-                            : ""
-                        }
-                `;
-                    commentsEl.appendChild(div);
-                    if (window.MathJax && MathJax.typesetPromise) {
-                        await MathJax.typesetPromise([div]);
-                    }
-                }
-            } catch (e) {
-                console.error(e);
-                commentsEl.innerHTML = "❌ 无法加载评论，请检查 LeanCloud 设置。";
-            }
+    <style type="text/css">
+        .CtxtMenu_InfoClose {
+            top: .2em;
+            right: .2em;
         }
 
-        loadComments();
-    </script>
+        .CtxtMenu_InfoContent {
+            overflow: auto;
+            text-align: left;
+            font-size: 80%;
+            padding: .4em .6em;
+            border: 1px inset;
+            margin: 1em 0px;
+            max-height: 20em;
+            max-width: 30em;
+            background-color: #EEEEEE;
+            white-space: normal;
+        }
 
-    <script>
-        // 粒子背景初始化
-        particlesJS("particles-js", {
-            particles: {
-                number: { value: 90, density: { enable: true, value_area: 800 } },
-                color: { value: "#60a5fa" },
-                shape: { type: "circle" },
-                opacity: { value: 0.5 },
-                size: { value: 2 },
-                line_linked: {
-                    enable: true,
-                    distance: 120,
-                    color: "#60a5fa",
-                    opacity: 0.3,
-                    width: 1,
-                },
-                move: { enable: true, speed: 1.3, out_mode: "bounce" },
-            },
-            interactivity: {
-                events: { onhover: { enable: true, mode: "repulse" } },
-                modes: { repulse: { distance: 100 } },
-            },
-            retina_detect: true,
-        });
-    </script>
+        .CtxtMenu_Info.CtxtMenu_MousePost {
+            outline: none;
+        }
+
+        .CtxtMenu_Info {
+            position: fixed;
+            left: 50%;
+            width: auto;
+            text-align: center;
+            border: 3px outset;
+            padding: 1em 2em;
+            background-color: #DDDDDD;
+            color: black;
+            cursor: default;
+            font-family: message-box;
+            font-size: 120%;
+            font-style: normal;
+            text-indent: 0;
+            text-transform: none;
+            line-height: normal;
+            letter-spacing: normal;
+            word-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            float: none;
+            z-index: 201;
+            border-radius: 15px; /* Opera 10.5 and IE9 */
+            -webkit-border-radius: 15px; /* Safari and Chrome */
+            -moz-border-radius: 15px; /* Firefox */
+            -khtml-border-radius: 15px; /* Konqueror */
+            box-shadow: 0px 10px 20px #808080; /* Opera 10.5 and IE9 */
+            -webkit-box-shadow: 0px 10px 20px #808080; /* Safari 3 & Chrome */
+            -moz-box-shadow: 0px 10px 20px #808080; /* Forefox 3.5 */
+            -khtml-box-shadow: 0px 10px 20px #808080; /* Konqueror */
+            filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */
+        }
+    </style>
+    <style type="text/css">
+        .CtxtMenu_MenuClose {
+            position: absolute;
+            cursor: pointer;
+            display: inline-block;
+            border: 2px solid #AAA;
+            border-radius: 18px;
+            -webkit-border-radius: 18px; /* Safari and Chrome */
+            -moz-border-radius: 18px; /* Firefox */
+            -khtml-border-radius: 18px; /* Konqueror */
+            font-family: "Courier New", Courier;
+            font-size: 24px;
+            color: #F0F0F0
+        }
+
+            .CtxtMenu_MenuClose span {
+                display: block;
+                background-color: #AAA;
+                border: 1.5px solid;
+                border-radius: 18px;
+                -webkit-border-radius: 18px; /* Safari and Chrome */
+                -moz-border-radius: 18px; /* Firefox */
+                -khtml-border-radius: 18px; /* Konqueror */
+                line-height: 0;
+                padding: 8px 0 6px /* may need to be browser-specific */
+            }
+
+            .CtxtMenu_MenuClose:hover {
+                color: white !important;
+                border: 2px solid #CCC !important
+            }
+
+                .CtxtMenu_MenuClose:hover span {
+                    background-color: #CCC !important
+                }
+
+                .CtxtMenu_MenuClose:hover:focus {
+                    outline: none
+                }
+    </style>
+    <style type="text/css">
+        .CtxtMenu_Menu {
+            position: absolute;
+            background-color: white;
+            color: black;
+            width: auto;
+            padding: 5px 0px;
+            border: 1px solid #CCCCCC;
+            margin: 0;
+            cursor: default;
+            font: menu;
+            text-align: left;
+            text-indent: 0;
+            text-transform: none;
+            line-height: normal;
+            letter-spacing: normal;
+            word-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            float: none;
+            z-index: 201;
+            border-radius: 5px; /* Opera 10.5 and IE9 */
+            -webkit-border-radius: 5px; /* Safari and Chrome */
+            -moz-border-radius: 5px; /* Firefox */
+            -khtml-border-radius: 5px; /* Konqueror */
+            box-shadow: 0px 10px 20px #808080; /* Opera 10.5 and IE9 */
+            -webkit-box-shadow: 0px 10px 20px #808080; /* Safari 3 & Chrome */
+            -moz-box-shadow: 0px 10px 20px #808080; /* Forefox 3.5 */
+            -khtml-box-shadow: 0px 10px 20px #808080; /* Konqueror */
+        }
+
+        .CtxtMenu_MenuItem {
+            padding: 1px 2em;
+            background: transparent;
+        }
+
+        .CtxtMenu_MenuArrow {
+            position: absolute;
+            right: .5em;
+            padding-top: .25em;
+            color: #666666;
+            font-family: null;
+            font-size: .75em
+        }
+
+        .CtxtMenu_MenuActive .CtxtMenu_MenuArrow {
+            color: white
+        }
+
+        .CtxtMenu_MenuArrow.CtxtMenu_RTL {
+            left: .5em;
+            right: auto
+        }
+
+        .CtxtMenu_MenuCheck {
+            position: absolute;
+            left: .7em;
+            font-family: null
+        }
+
+            .CtxtMenu_MenuCheck.CtxtMenu_RTL {
+                right: .7em;
+                left: auto
+            }
+
+        .CtxtMenu_MenuRadioCheck {
+            position: absolute;
+            left: .7em;
+        }
+
+            .CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {
+                right: .7em;
+                left: auto
+            }
+
+        .CtxtMenu_MenuInputBox {
+            padding-left: 1em;
+            right: .5em;
+            color: #666666;
+            font-family: null;
+        }
+
+            .CtxtMenu_MenuInputBox.CtxtMenu_RTL {
+                left: .1em;
+            }
+
+        .CtxtMenu_MenuComboBox {
+            left: .1em;
+            padding-bottom: .5em;
+        }
+
+        .CtxtMenu_MenuSlider {
+            left: .1em;
+        }
+
+        .CtxtMenu_SliderValue {
+            position: absolute;
+            right: .1em;
+            padding-top: .25em;
+            color: #333333;
+            font-size: .75em
+        }
+
+        .CtxtMenu_SliderBar {
+            outline: none;
+            background: #d3d3d3
+        }
+
+        .CtxtMenu_MenuLabel {
+            padding: 1px 2em 3px 1.33em;
+            font-style: italic
+        }
+
+        .CtxtMenu_MenuRule {
+            border-top: 1px solid #DDDDDD;
+            margin: 4px 3px;
+        }
+
+        .CtxtMenu_MenuDisabled {
+            color: GrayText
+        }
+
+        .CtxtMenu_MenuActive {
+            background-color: #606872;
+            color: white;
+        }
+
+        .CtxtMenu_MenuDisabled:focus {
+            background-color: #E8E8E8
+        }
+
+        .CtxtMenu_MenuLabel:focus {
+            background-color: #E8E8E8
+        }
+
+        .CtxtMenu_ContextMenu:focus {
+            outline: none
+        }
+
+        .CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {
+            outline: none
+        }
+
+        .CtxtMenu_SelectionMenu {
+            position: relative;
+            float: left;
+            border-bottom: none;
+            -webkit-box-shadow: none;
+            -webkit-border-radius: 0px;
+        }
+
+        .CtxtMenu_SelectionItem {
+            padding-right: 1em;
+        }
+
+        .CtxtMenu_Selection {
+            right: 40%;
+            width: 50%;
+        }
+
+        .CtxtMenu_SelectionBox {
+            padding: 0em;
+            max-height: 20em;
+            max-width: none;
+            background-color: #FFFFFF;
+        }
+
+        .CtxtMenu_SelectionDivider {
+            clear: both;
+            border-top: 2px solid #000000;
+        }
+
+        .CtxtMenu_Menu .CtxtMenu_MenuClose {
+            top: -10px;
+            left: -10px
+        }
+    </style>
+    <style id="MJX-CHTML-styles">
+        mjx-container[jax="CHTML"] {
+            line-height: 0;
+        }
+
+        mjx-container [space="1"] {
+            margin-left: .111em;
+        }
+
+        mjx-container [space="2"] {
+            margin-left: .167em;
+        }
+
+        mjx-container [space="3"] {
+            margin-left: .222em;
+        }
+
+        mjx-container [space="4"] {
+            margin-left: .278em;
+        }
+
+        mjx-container [space="5"] {
+            margin-left: .333em;
+        }
+
+        mjx-container [rspace="1"] {
+            margin-right: .111em;
+        }
+
+        mjx-container [rspace="2"] {
+            margin-right: .167em;
+        }
+
+        mjx-container [rspace="3"] {
+            margin-right: .222em;
+        }
+
+        mjx-container [rspace="4"] {
+            margin-right: .278em;
+        }
+
+        mjx-container [rspace="5"] {
+            margin-right: .333em;
+        }
+
+        mjx-container [size="s"] {
+            font-size: 70.7%;
+        }
+
+        mjx-container [size="ss"] {
+            font-size: 50%;
+        }
+
+        mjx-container [size="Tn"] {
+            font-size: 60%;
+        }
+
+        mjx-container [size="sm"] {
+            font-size: 85%;
+        }
+
+        mjx-container [size="lg"] {
+            font-size: 120%;
+        }
+
+        mjx-container [size="Lg"] {
+            font-size: 144%;
+        }
+
+        mjx-container [size="LG"] {
+            font-size: 173%;
+        }
+
+        mjx-container [size="hg"] {
+            font-size: 207%;
+        }
+
+        mjx-container [size="HG"] {
+            font-size: 249%;
+        }
+
+        mjx-container [width="full"] {
+            width: 100%;
+        }
+
+        mjx-box {
+            display: inline-block;
+        }
+
+        mjx-block {
+            display: block;
+        }
+
+        mjx-itable {
+            display: inline-table;
+        }
+
+        mjx-row {
+            display: table-row;
+        }
+
+            mjx-row > * {
+                display: table-cell;
+            }
+
+        mjx-mtext {
+            display: inline-block;
+        }
+
+        mjx-mstyle {
+            display: inline-block;
+        }
+
+        mjx-merror {
+            display: inline-block;
+            color: red;
+            background-color: yellow;
+        }
+
+        mjx-mphantom {
+            visibility: hidden;
+        }
+
+        _::-webkit-full-page-media, _:future, :root mjx-container {
+            will-change: opacity;
+        }
+
+        mjx-assistive-mml {
+            position: absolute !important;
+            top: 0px;
+            left: 0px;
+            clip: rect(1px, 1px, 1px, 1px);
+            padding: 1px 0px 0px 0px !important;
+            border: 0px !important;
+            display: block !important;
+            width: auto !important;
+            overflow: hidden !important;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+            mjx-assistive-mml[display="block"] {
+                width: 100% !important;
+            }
+
+        mjx-c::before {
+            display: block;
+            width: 0;
+        }
+
+        .MJX-TEX {
+            font-family: MJXZERO, MJXTEX;
+        }
+
+        .TEX-B {
+            font-family: MJXZERO, MJXTEX-B;
+        }
+
+        .TEX-I {
+            font-family: MJXZERO, MJXTEX-I;
+        }
+
+        .TEX-MI {
+            font-family: MJXZERO, MJXTEX-MI;
+        }
+
+        .TEX-BI {
+            font-family: MJXZERO, MJXTEX-BI;
+        }
+
+        .TEX-S1 {
+            font-family: MJXZERO, MJXTEX-S1;
+        }
+
+        .TEX-S2 {
+            font-family: MJXZERO, MJXTEX-S2;
+        }
+
+        .TEX-S3 {
+            font-family: MJXZERO, MJXTEX-S3;
+        }
+
+        .TEX-S4 {
+            font-family: MJXZERO, MJXTEX-S4;
+        }
+
+        .TEX-A {
+            font-family: MJXZERO, MJXTEX-A;
+        }
+
+        .TEX-C {
+            font-family: MJXZERO, MJXTEX-C;
+        }
+
+        .TEX-CB {
+            font-family: MJXZERO, MJXTEX-CB;
+        }
+
+        .TEX-FR {
+            font-family: MJXZERO, MJXTEX-FR;
+        }
+
+        .TEX-FRB {
+            font-family: MJXZERO, MJXTEX-FRB;
+        }
+
+        .TEX-SS {
+            font-family: MJXZERO, MJXTEX-SS;
+        }
+
+        .TEX-SSB {
+            font-family: MJXZERO, MJXTEX-SSB;
+        }
+
+        .TEX-SSI {
+            font-family: MJXZERO, MJXTEX-SSI;
+        }
+
+        .TEX-SC {
+            font-family: MJXZERO, MJXTEX-SC;
+        }
+
+        .TEX-T {
+            font-family: MJXZERO, MJXTEX-T;
+        }
+
+        .TEX-V {
+            font-family: MJXZERO, MJXTEX-V;
+        }
+
+        .TEX-VB {
+            font-family: MJXZERO, MJXTEX-VB;
+        }
+
+        mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+            font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A !important;
+        }
+
+        @font-face /* 0 */ {
+            font-family: MJXZERO;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+        }
+
+        @font-face /* 1 */ {
+            font-family: MJXTEX;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+        }
+
+        @font-face /* 2 */ {
+            font-family: MJXTEX-B;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+        }
+
+        @font-face /* 3 */ {
+            font-family: MJXTEX-I;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+        }
+
+        @font-face /* 4 */ {
+            font-family: MJXTEX-MI;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+        }
+
+        @font-face /* 5 */ {
+            font-family: MJXTEX-BI;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+        }
+
+        @font-face /* 6 */ {
+            font-family: MJXTEX-S1;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+        }
+
+        @font-face /* 7 */ {
+            font-family: MJXTEX-S2;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+        }
+
+        @font-face /* 8 */ {
+            font-family: MJXTEX-S3;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+        }
+
+        @font-face /* 9 */ {
+            font-family: MJXTEX-S4;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+        }
+
+        @font-face /* 10 */ {
+            font-family: MJXTEX-A;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+        }
+
+        @font-face /* 11 */ {
+            font-family: MJXTEX-C;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+        }
+
+        @font-face /* 12 */ {
+            font-family: MJXTEX-CB;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+        }
+
+        @font-face /* 13 */ {
+            font-family: MJXTEX-FR;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+        }
+
+        @font-face /* 14 */ {
+            font-family: MJXTEX-FRB;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+        }
+
+        @font-face /* 15 */ {
+            font-family: MJXTEX-SS;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+        }
+
+        @font-face /* 16 */ {
+            font-family: MJXTEX-SSB;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+        }
+
+        @font-face /* 17 */ {
+            font-family: MJXTEX-SSI;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+        }
+
+        @font-face /* 18 */ {
+            font-family: MJXTEX-SC;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+        }
+
+        @font-face /* 19 */ {
+            font-family: MJXTEX-T;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+        }
+
+        @font-face /* 20 */ {
+            font-family: MJXTEX-V;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+        }
+
+        @font-face /* 21 */ {
+            font-family: MJXTEX-VB;
+            src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+        }
+    </style>
+    <style type="text/css">
+        #_copy {
+            align-items: center;
+            background: #4494d5;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            font-size: 13px;
+            height: 30px;
+            justify-content: center;
+            position: absolute;
+            width: 60px;
+            z-index: 1000
+        }
+
+        #select-tooltip, #sfModal, .modal-backdrop, div[id^=reader-helper] {
+            display: none !important
+        }
+
+        .modal-open {
+            overflow: auto !important
+        }
+
+        ._sf_adjust_body {
+            padding-right: 0 !important
+        }
+
+        .super_copy_btns_div {
+            position: fixed;
+            width: 154px;
+            left: 10px;
+            top: 45%;
+            background: #e7f1ff;
+            border: 2px solid #4595d5;
+            font-weight: 600;
+            border-radius: 2px;
+            font-family: -apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+            z-index: 5000
+        }
+
+        .super_copy_btns_logo {
+            width: 100%;
+            background: #4595d5;
+            text-align: center;
+            font-size: 12px;
+            color: #e7f1ff;
+            line-height: 30px;
+            height: 30px
+        }
+
+        .super_copy_btns_btn {
+            display: block;
+            width: 128px;
+            height: 28px;
+            background: #7f5711;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            border: 0;
+            outline: 0;
+            margin: 8px auto;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: .9
+        }
+
+            .super_copy_btns_btn:hover {
+                opacity: .8
+            }
+
+            .super_copy_btns_btn:active {
+                opacity: 1
+            }
+    </style>
+</head>
+<div id="mask-2E010B9A-9E10-498E-8664-8A0DAA22D7CB" class="print-ignore" style="position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 2147483647; mix-blend-mode: unset; pointer-events: none; transition: opacity 0.1s ease 0s; opacity: 1; display: none; background: rgba(255, 255, 255, 0);"></div>
+<body>
+    <div id="particles-js"><canvas class="particles-js-canvas-el" width="2532" height="1296" style="width: 100%; height: 100%;"></canvas></div> <div class="card"> <h2>自然窥探者 · LeanCloud 上传系统</h2> <p>上传 PDF 或图片评论，全网可见</p> <input id="name" placeholder="名字 (必填)"> <input id="email" placeholder="邮箱 (可选)"> <textarea id="text" placeholder="评论内容 (支持 Markdown 与 LaTeX)"></textarea> <input id="fileInput" type="file" accept="application/pdf,image/png,image/jpeg"> <button id="submitBtn">提交评论</button> <div id="status" style="margin-top:6px;font-size:13px;color:#94a3b8;"></div> <div id="markdownPreview">*Markdown 实时预览 / Live Preview*</div> <h3 style="margin-top:20px;">已有评论</h3> <div id="comments"><div class="comment"> <div><strong>NaturalObserver</strong> <span style="color:#94a3b8;font-size:12px;">2025/11/7 20:18:45</span></div> <div style="margin-top:6px;"><p><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="0" style="font-size: 122.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D434 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D44E TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>A</mi><mi>a</mi></msub></math></mjx-assistive-mml></mjx-container></p> </div> </div><div class="comment"> <div><strong>NaturalObserver</strong> <span style="color:#94a3b8;font-size:12px;">2025/11/7 20:18:30</span></div> <div style="margin-top:6px;"><p><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="1" style="font-size: 122.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-merror data-mjx-error="Double subscripts: use braces to clarify"><mjx-mtext style="font-family: MJXZERO, serif;"><mjx-utext variant="-explicitFont" style="font-size: 81.9%; padding: 0.916em 0px 0.244em; width: 320px;">Double subscripts: use braces to clarify</mjx-utext></mjx-mtext></mjx-merror></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><merror data-mjx-error="Double subscripts: use braces to clarify"><mtext>Double subscripts: use braces to clarify</mtext></merror></math></mjx-assistive-mml></mjx-container></p> </div> <a class="file-link" href="http://lc-q2jlmwgn.cn-n1.lcfile.com/lQHBPbkDVpfnvD8qH6Fie6wzirPsMW16/abc.pdf" target="_blank">📎 abc.pdf</a> </div><div class="comment"> <div><strong>NaturalObserver</strong> <span style="color:#94a3b8;font-size:12px;">2025/11/7 20:17:45</span></div> <div style="margin-top:6px;"><p>0</p> </div> </div><div class="comment"> <div><strong>匿名</strong> <span style="color:#94a3b8;font-size:12px;">2025/11/7 10:44:54</span></div> <div style="margin-top:6px;"></div> </div><div class="comment"> <div><strong>匿名</strong> <span style="color:#94a3b8;font-size:12px;">2025/11/7 10:01:26</span></div> <div style="margin-top:6px;"></div> </div></div> <div class="about"> <b>Otto Von Davinstar</b><br> “If you want to find the secrets of the universe,<br> think in terms of energy, frequency and vibration.”<br> — N. Tesla </div> </div> <!-- marked.js for Markdown 解析 -->
+    <script type="module">import { marked } from "https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js"; // ---------- 初始化 LeanCloud ---------- AV.init({ appId: "Q2JlmwGNoDKcXuzrp0Th0s7i-gzGzoHsz", // ← 改成你自己的 appKey: "b5dHHuUgH1AKyXXxtfNfMBLj", // ← 改成你自己的 serverURL: "https://q2jlmwgn.lc-cn-n1-shared.com" // ← 改成你自己的 }); const nameEl = document.getElementById('name'); const emailEl = document.getElementById('email'); const textEl = document.getElementById('text'); const fileEl = document.getElementById('fileInput'); const previewEl = document.getElementById('markdownPreview'); const statusEl = document.getElementById('status'); const commentsEl = document.getElementById('comments'); const submitBtn = document.getElementById('submitBtn'); // ---------- Markdown 实时预览 ---------- textEl.addEventListener('input', async () => { previewEl.innerHTML = marked.parse(textEl.value || "*Markdown 实时预览 / Live Preview*"); if (window.MathJax && MathJax.typesetPromise) { try { await MathJax.typesetPromise([previewEl]); } catch { } } }); // ---------- 提交评论 ---------- submitBtn.addEventListener('click', async () => { const name = nameEl.value.trim(); const email = emailEl.value.trim(); const text = textEl.value.trim(); const file = fileEl.files[0]; if (!name || !text) return alert("请填写名字与评论内容！"); statusEl.textContent = "正在上传中..."; try { const Comment = AV.Object.extend("comments"); const comment = new Comment(); comment.set("name", name); comment.set("email", email); comment.set("text", text); if (file) { const avFile = new AV.File(file.name, file); await avFile.save(); comment.set("fileUrl", avFile.url()); comment.set("fileName", file.name); } await comment.save(); statusEl.textContent = "✅ 评论已提交！"; nameEl.value = emailEl.value = textEl.value = ""; fileEl.value = ""; previewEl.innerHTML = "*Markdown 实时预览 / Live Preview*"; loadComments(); } catch (err) { console.error(err); statusEl.textContent = "❌ 上传失败，请检查 LeanCloud 设置"; } }); // ---------- 加载评论 ---------- async function loadComments() { commentsEl.innerHTML = "<p>加载中...</p>"; const query = new AV.Query("comments"); query.descending("createdAt"); try { const results = await query.find(); commentsEl.innerHTML = ""; for (const item of results) { const div = document.createElement("div"); div.className = "comment"; const name = item.get("name") || "匿名"; const text = marked.parse(item.get("text") || ""); const fileUrl = item.get("fileUrl"); const fileName = item.get("fileName"); const date = item.createdAt ? item.createdAt.toLocaleString() : ""; div.innerHTML = <div><strong>${name}</strong> <span style="color:#94a3b8;font-size:12px;">${date}</span></div> <div style="margin-top:6px;">${text}</div> ${fileUrl ? <a class="file-link" href="${fileUrl}" target="_blank">📎 ${fileName}</a> : ""} ; commentsEl.appendChild(div); if (window.MathJax && MathJax.typesetPromise) { await MathJax.typesetPromise([div]); } } } catch (e) { console.error(e); commentsEl.innerHTML = "❌ 无法加载评论，请检查 LeanCloud 设置。"; } } loadComments();</script>
+    <script>// 粒子背景初始化 particlesJS("particles-js", { particles: { number: { value: 90, density: { enable: true, value_area: 800 } }, color: { value: "#60a5fa" }, shape: { type: "circle" }, opacity: { value: 0.5 }, size: { value: 2 }, line_linked: { enable: true, distance: 120, color: "#60a5fa", opacity: 0.3, width: 1 }, move: { enable: true, speed: 1.3, out_mode: "bounce" } }, interactivity: { events: { onhover: { enable: true, mode: "repulse" } }, modes: { repulse: { distance: 100 } } }, retina_detect: true });</script>
+    <script src="chrome-extension://hllhhiklilobgjopjnlpnlklgkgogmnc/static/js/inject.js" type="text/javascript" async=""></script>
+    <script src="chrome-extension://idadhkacjcigkceplnbimcidnnlnlpjo/static/js/inject.js" type="text/javascript" async=""></script>
+    <script src="chrome-extension://kbchedbopmjbhlmjinoighedabpjbkig/static/js/inject.js" type="text/javascript" async=""></script>
 </body>
 </html>
-
